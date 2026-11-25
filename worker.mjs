@@ -125,7 +125,17 @@ async function saveFilm(request, bucket) {
   } catch {
     return new Response(null,{status:400});
   }
-  const stream = new FixedLengthStream(length);
+  let remaining = length;
+  const stream = typeof FixedLengthStream === 'function' ? new FixedLengthStream(length) : new TransformStream({
+    transform(chunk, controller) {
+      remaining -= chunk.byteLength;
+      if(remaining < 0) throw new Error('Upload exceeds declared length');
+      controller.enqueue(chunk);
+    },
+    flush() {
+      if(remaining !== 0) throw new Error('Incomplete upload');
+    },
+  });
   const id = crypto.randomUUID();
   await Promise.all([
     request.body.pipeTo(stream.writable),
