@@ -39,7 +39,20 @@ function directory(key) {
   if (!key.startsWith('films/') || !uuid.test(id)) throw new Error('Invalid film key');
   return join(data, id);
 }
+function coverPath(key) {
+  const id = key.slice('covers/'.length);
+  if (!key.startsWith('covers/') || !uuid.test(id)) throw new Error('Invalid cover key');
+  return join(data, id + '.jpg');
+}
 async function head(key) {
+  if (key.startsWith('covers/')) {
+    try {
+      return { key, size: (await stat(coverPath(key))).size };
+    } catch (error) {
+      if (error.code === 'ENOENT') return null;
+      throw error;
+    }
+  }
   const path = directory(key);
   try {
     const [metadata, file] = await Promise.all([readFile(join(path, 'metadata.json'), 'utf8'), stat(join(path, 'video.mp4'))]);
@@ -57,6 +70,17 @@ env.BUCKET = {
     return { objects: objects.filter(Boolean), truncated: false };
   },
   async put(key, body, { customMetadata }) {
+    if (key.startsWith('covers/')) {
+      const path = coverPath(key);
+      const stage = join(data, '.cover-' + randomUUID());
+      try {
+        await writeFile(stage, body, { flag: 'wx', mode: 0o600 });
+        await rename(stage, path);
+      } finally {
+        await rm(stage, { force: true });
+      }
+      return;
+    }
     const path = directory(key);
     const stage = join(data, '.upload-' + randomUUID());
     await mkdir(stage, { mode: 0o700 });
@@ -68,8 +92,12 @@ env.BUCKET = {
       await rm(stage, { recursive: true, force: true });
     }
   },
+  async delete(key) {
+    await rm(coverPath(key), { force: true });
+  },
   async get(key, { range } = {}) {
-    const path = join(directory(key), 'video.mp4');
+    if (key.startsWith('covers/') && !await head(key)) return null;
+    const path = key.startsWith('covers/') ? coverPath(key) : join(directory(key), 'video.mp4');
     const options = range ? { start: range.offset, end: range.offset + range.length - 1 } : {};
     return { body: Readable.toWeb(createReadStream(path, options)) };
   },
