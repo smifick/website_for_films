@@ -1,26 +1,20 @@
-const films = [
-  {id:'sintel', title:'Синтел', original:'Sintel', year:2010, genre:'Фэнтези', time:15, file:'Sintel', description:'Одинокая странница находит раненого дракончика. Когда его похищают, поиски приводят её в горы, где она узнаёт, сколько времени отняло у неё это путешествие.'},
-  {id:'steel', title:'Слёзы стали', original:'Tears of Steel', year:2012, genre:'Фантастика', time:12, file:'TearsOfSteel', description:'В будущем Амстердаме группа учёных пытается остановить войну с машинами, воссоздав один разговор из прошлого.'},
-  {id:'bunny', title:'Большой Бак Банни', original:'Big Buck Bunny', year:2008, genre:'Комедия', time:10, file:'BigBuckBunny', description:'Добродушный кролик наслаждается лесной тишиной, пока трое хулиганов не вынуждают его придумать хитроумный ответ.'},
-  {id:'dream', title:'Мечта слонов', original:'Elephants Dream', year:2006, genre:'Фантастика', time:11, file:'ElephantsDream', description:'Двое спутников идут сквозь бесконечную машину. Один уверяет, что знает её секреты, а другой начинает сомневаться в его рассказах.'},
-];
-const media = 'https://storage.googleapis.com/gtv-videos-bucket/sample/';
 const css = `
-*{box-sizing:border-box}html{color-scheme:dark}body{margin:0;background:#0e0e0e;color:#f6f5f2;font:16px/1.55 system-ui,sans-serif}a{color:inherit}header,footer{display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,5vw,76px);min-height:74px;border-bottom:1px solid #292929;gap:16px}footer{border:0;border-top:1px solid #292929;color:#aaa;font-size:13px}.logo{font-weight:900;letter-spacing:.19em;text-decoration:none;font-size:19px}.logo i{font-style:normal;margin-right:12px}.tag,.eyebrow{text-transform:uppercase;letter-spacing:.17em;font-size:12px;font-weight:700}.tag{color:#aaa}h1,h2{font-family:Georgia,serif;font-weight:400;line-height:.98;margin:16px 0 22px}h1{font-size:clamp(58px,8vw,126px);letter-spacing:-.07em}h2{font-size:clamp(32px,5vw,65px);letter-spacing:-.05em}p{color:#bdbdbd;max-width:50ch}button,.button{cursor:pointer;display:inline-flex;align-items:center;justify-content:center;border:1px solid #eee;background:#eee;color:#111;min-height:48px;padding:0 24px;font:700 15px system-ui;text-decoration:none}button:hover,.button:hover{background:#c9c9c9}button.secondary{background:transparent;color:#eee;border-color:#444}.gate{display:grid;grid-template-columns:1.25fr 1fr;min-height:calc(100svh - 148px)}.art{position:relative;min-height:320px;background:#222 center/cover no-repeat url('/cover.webp');display:flex;flex-direction:column;justify-content:end;padding:clamp(24px,5vw,76px);isolation:isolate}.art:before,.featured:before{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#000d,transparent 80%);z-index:-1}.art h1{max-width:8ch}.art .eyebrow{border-left:2px solid #eee;padding-left:12px}.entry{align-self:center;width:min(100%,515px);padding:clamp(24px,5vw,76px);margin:auto}.entry p{margin-bottom:30px}label{display:block;font-size:14px;margin-bottom:8px}.inputrow{position:relative}input{width:100%;padding:14px 95px 14px 14px;background:#171717;color:#fff;border:1px solid #474747;border-radius:0;font:inherit}.inputrow button{position:absolute;right:0;top:0;min-height:100%;border:0;padding:0 12px;font-size:13px}.entry button[type=submit]{width:100%;margin-top:12px}.error{color:white;border-left:2px solid white;padding-left:10px}.wrap{width:min(1340px,100%);margin:auto;padding:38px clamp(20px,5vw,76px) 70px}.featured{position:relative;isolation:isolate;min-height:430px;padding:clamp(24px,5vw,70px);background:#242424 center/cover no-repeat url('/cover.webp');display:flex;flex-direction:column;justify-content:end;align-items:start}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:24px}.card{border-top:1px solid #444;padding-top:18px}.card img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;filter:grayscale(1);background:#222}.card h3{font:28px Georgia;margin:14px 0 6px}.card a{text-underline-offset:6px}.card p{font-size:15px}video{width:100%;max-height:72vh;background:#000;margin-top:20px}.credit{font-size:14px}@media(max-width:720px){.gate{grid-template-columns:1fr}.art{min-height:300px}.entry{padding-top:42px;padding-bottom:50px}header,footer{min-height:64px}.featured{min-height:340px}}
+*{box-sizing:border-box}html{color-scheme:dark}body{margin:0;background:#0e0e0e;color:#f6f5f2;font:16px/1.55 system-ui,sans-serif}a{color:inherit}header,footer{display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,5vw,76px);min-height:74px;border-bottom:1px solid #292929;gap:16px}footer{border:0;border-top:1px solid #292929;color:#aaa;font-size:13px}.logo{font-weight:900;letter-spacing:.19em;text-decoration:none;font-size:19px}.logo i{font-style:normal;margin-right:12px}.tag,.eyebrow{text-transform:uppercase;letter-spacing:.17em;font-size:12px;font-weight:700}.tag{color:#aaa}h1,h2{font-family:Georgia,serif;font-weight:400;line-height:.98;margin:16px 0 22px}h1{font-size:clamp(58px,8vw,126px);letter-spacing:-.07em}h2{font-size:clamp(32px,5vw,65px);letter-spacing:-.05em}p{color:#bdbdbd;max-width:50ch}button,.button{cursor:pointer;display:inline-flex;align-items:center;justify-content:center;border:1px solid #eee;background:#eee;color:#111;min-height:48px;padding:0 24px;font:700 15px system-ui;text-decoration:none}button:hover,.button:hover{background:#c9c9c9}button.secondary{background:transparent;color:#eee;border-color:#444}.gate{display:grid;grid-template-columns:1.25fr 1fr;min-height:calc(100svh - 148px)}.art{position:relative;min-height:320px;background:#222 center 30%/cover no-repeat url('/login.webp');display:flex;flex-direction:column;justify-content:end;padding:clamp(24px,5vw,76px);isolation:isolate}.art:before{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#000e,#0007 50%,transparent 85%);z-index:-1}.art h1{max-width:13ch;font-size:clamp(40px,6vw,90px);overflow-wrap:anywhere}.art .eyebrow{border-left:2px solid #eee;padding-left:12px}.entry{align-self:center;width:min(100%,515px);padding:clamp(24px,5vw,76px);margin:auto}.entry p{margin-bottom:30px}label{display:block;font-size:14px;margin-bottom:8px}.inputrow{position:relative}input{width:100%;padding:14px 95px 14px 14px;background:#171717;color:#fff;border:1px solid #474747;border-radius:0;font:inherit}.inputrow button{position:absolute;right:0;top:0;min-height:100%;border:0;padding:0 12px;font-size:13px}.entry button[type=submit]{width:100%;margin-top:12px}.error{color:white;border-left:2px solid white;padding-left:10px}.wrap{width:min(1340px,100%);margin:auto;padding:38px clamp(20px,5vw,76px) 70px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:24px}.card{border-top:1px solid #444;padding-top:18px}.card img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;filter:grayscale(1);background:#222}.card h3{font:28px Georgia;margin:14px 0 6px}.card a{text-underline-offset:6px}.card p{font-size:15px}video{width:100%;max-height:72vh;background:#000;margin-top:20px}@media(max-width:720px){.gate{grid-template-columns:1fr}.art{min-height:300px}.entry{padding-top:42px;padding-bottom:50px}header,footer{min-height:64px;flex-wrap:wrap;padding-block:12px}}
 `;
-const logo = '<a class="logo" href="/"><i>◩</i>BASELINE</a>';
+const logo = '<a class="logo" href="/"><i>◩</i>сообщество молодого кино</a>';
 function page(title, body, signedIn = false, status = 200) {
-  return new Response(`<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title} · BASELINE</title><style>${css}.administration{max-width:540px;margin:auto}.administration form{display:grid;gap:12px;margin-top:24px}.administration input,.administration textarea{padding:12px;border:1px solid #474747;color:white;background:#171717;font:inherit;width:100%}.administration label{margin:0}.administration button:disabled{opacity:.55;cursor:wait}</style><header>${logo}${signedIn ? '<form method="post" action="/logout"><button class="secondary">Выйти</button></form>' : '<span class="tag">Частный кинозал</span>'}</header>${body}<footer><span>BASELINE CINEMA</span><span>Онлайн-кинотеатр</span></footer></html>`, {status, headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Frame-Options':'DENY'}});
+  return new Response(`<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title} · youngcinemaclub</title><style>${css}.administration{max-width:540px;margin:auto}.admin-photo{display:block;width:min(100%,360px);height:auto;margin:24px auto}.administration form{display:grid;gap:12px;margin-top:24px}.administration input,.administration textarea{padding:12px;border:1px solid #474747;color:white;background:#171717;font:inherit;width:100%}.administration label{margin:0}.administration button:disabled{opacity:.55;cursor:wait}</style><header>${logo}${signedIn ? '<form method="post" action="/logout"><button class="secondary">Выйти</button></form>' : '<span class="tag">Частный кинозал молодого кино</span>'}</header>${body}<footer><span>youngcinemaclub</span><span>Онлайн-кинотеатр</span></footer></html>`, {status, headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Frame-Options':'DENY'}});
 }
 function gate(error = '', status = 200) {
-  return page('Вход', `<main class="gate"><section class="art"><span class="eyebrow">Закрытая коллекция</span><h1>Частный кинозал</h1></section><section class="entry"><h2>Вход в кинозал</h2><p>Введите код доступа, чтобы открыть каталог и смотреть фильмы.</p><form method="post" action="/"><label for="code">Код доступа</label><div class="inputrow"><input id="code" name="code" type="password" required maxlength="128" autocomplete="current-password"><button type="button" class="secondary" aria-pressed="false" onclick="const input=this.previousElementSibling;const show=input.type==='password';input.type=show?'text':'password';this.textContent=show?'Скрыть':'Показать';this.setAttribute('aria-pressed',show)">Показать</button></div>${error ? `<p class="error" role="alert">${error}</p>` : ''}<button type="submit">Открыть кинозал</button></form></section></main>`,false,status);
+  return page('Вход', `<main class="gate"><section class="art"><span class="eyebrow">Закрытая коллекция</span><h1>Частный кинозал молодого кино</h1></section><section class="entry"><h2>Вход в кинозал</h2><p>Введите код доступа, чтобы открыть каталог и смотреть фильмы.</p><form method="post" action="/"><label for="code">Код доступа</label><div class="inputrow"><input id="code" name="code" type="password" required maxlength="128" autocomplete="current-password"><button type="button" class="secondary" aria-pressed="false" onclick="const input=this.previousElementSibling;const show=input.type==='password';input.type=show?'text':'password';this.textContent=show?'Скрыть':'Показать';this.setAttribute('aria-pressed',show)">Показать</button></div>${error ? `<p class="error" role="alert">${error}</p>` : ''}<button type="submit">Открыть кинозал</button></form></section></main>`,false,status);
 }
-function metadata(film) {if(film.uploaded) return 'Загруженный фильм'; return `${film.year} · ${film.genre} · ${film.time} мин`;}
-function catalog(uploaded) {
-  return page('Фильмы', `<main class="wrap"><section class="featured"><span class="eyebrow">В центре внимания</span><h1>Синтел</h1><span>${metadata(films[0])}</span><p>${films[0].description}</p><a class="button" href="/film/sintel">Смотреть фильм</a></section><h2>Коллекция</h2><div class="grid">${[...uploaded,...films].map(film=>`<article class="card"><a href="/film/${film.id}" aria-label="${film.title}">${film.uploaded ? '<img src="/cover.webp" alt="" loading="lazy">' : `<img src="/poster/${film.id}" alt="" loading="lazy">`}</a><h3><a href="/film/${film.id}">${film.title}</a></h3><span class="tag">${metadata(film)}</span><p>${film.description}</p></article>`).join('')}</div></main>`,true);
+function catalog(films) {
+  const cards = films.map(film=>`<article class="card"><a href="/film/${film.id}" aria-label="${film.title}"><img src="/cover.webp" alt="" loading="lazy"></a><h3><a href="/film/${film.id}">${film.title}</a></h3><p>${film.description}</p></article>`).join('');
+  const content = cards ? `<div class="grid">${cards}</div>` : '<p>Фильмы пока не добавлены.</p>';
+  return page('Фильмы', `<main class="wrap"><h1>Коллекция</h1>${content}</main>`,true);
 }
 function filmPage(film) {
-  return page(film.title,`<main class="wrap"><a href="/">Все фильмы</a><h1>${film.title}</h1><span class="tag">${film.original ? film.original + ' · ' : ''}${metadata(film)}</span><video controls playsinline preload="metadata" poster="${film.uploaded ? '/cover.webp' : `/poster/${film.id}`}" src="/video/${film.id}" onerror="document.getElementById('video-error').hidden=false"></video><p id="video-error" role="alert" hidden>Видео не загрузилось. Попробуйте обновить страницу.</p><p>${film.description}</p>${film.uploaded ? '' : `<p class="credit">© Blender Foundation · <a href="https://studio.blender.org/films/">Blender Studio</a> · <a href="https://creativecommons.org/licenses/by/3.0/">CC BY 3.0</a></p>`}</main>`,true);
+  return page(film.title,`<main class="wrap"><a href="/">Все фильмы</a><h1>${film.title}</h1><video controls playsinline preload="metadata" poster="/cover.webp" src="/video/${film.id}" onerror="document.getElementById('video-error').hidden=false"></video><p id="video-error" role="alert" hidden>Видео не загрузилось. Попробуйте обновить страницу.</p><p>${film.description}</p></main>`,true);
 }
 const encoder = new TextEncoder();
 async function signature(secret, value) {
@@ -41,18 +35,6 @@ function redirect(request, token, maxAge, admin = false) {
   const secure = new URL(request.url).protocol === 'https:' ? '; Secure' : '';
   return new Response(null,{status:303,headers:{Location:admin ? '/admin' : '/','Cache-Control':'no-store','Set-Cookie':`${admin ? 'baseline_admin' : 'baseline_session'}=${token}; Path=/; HttpOnly${secure}; SameSite=Strict; Max-Age=${maxAge}`}});
 }
-async function proxy(request, url) {
-  const headers = new Headers();
-  if(request.headers.has('Range')) headers.set('Range',request.headers.get('Range'));
-  try {
-    const upstream = await fetch(url,{method:request.method,headers});
-    const result = new Headers({'Cache-Control':'private, no-store','X-Content-Type-Options':'nosniff'});
-    for(const name of ['Content-Type','Content-Length','Content-Range','Accept-Ranges']) if(upstream.headers.has(name)) result.set(name,upstream.headers.get(name));
-    return new Response(upstream.body,{status:upstream.status,headers:result});
-  } catch {
-    return new Response('Источник видео недоступен',{status:502});
-  }
-}
 const maxUpload = 90 * 1024 * 1024;
 const escapeHTML = (value) => value.replace(/[&<>"']/g, char => ({
   '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
@@ -62,7 +44,6 @@ function uploadedFilm(object) {
     id:object.key.slice('films/'.length),
     title:escapeHTML(object.customMetadata.title),
     description:escapeHTML(object.customMetadata.description),
-    uploaded:true,
   };
 }
 async function listUploads(bucket) {
@@ -108,7 +89,7 @@ form.addEventListener('submit', async event => {
   }
 });
 </script>` : `<form method="post" action="/admin"><label for="user">Логин</label><input id="user" name="user" required maxlength="128" autocomplete="username"><label for="password">Пароль</label><input id="password" name="password" type="password" required maxlength="128" autocomplete="current-password"><button>Войти</button></form>`;
-  return page('Администрирование', `<main class="wrap"><section class="administration"><a href="/">К кинотеатру</a><h2>${signedIn ? 'Загрузка фильма' : 'Вход администратора'}</h2>${error ? `<p class="error" role="alert">${error}</p>` : ''}${signedIn && !bucket ? '<p>Хранилище фильмов временно недоступно.</p>' : form}${signedIn ? '<form method="post" action="/admin/logout"><button class="secondary">Выйти из панели</button></form>' : ''}</section></main>`);
+  return page('Администрирование', `<main class="wrap"><section class="administration"><a href="/">К кинотеатру</a><img class="admin-photo" src="/admin.webp" alt="Мартин Скорсезе — Absolute Cinema"><h2>${signedIn ? 'Загрузка фильма' : 'Вход администратора'}</h2>${error ? `<p class="error" role="alert">${error}</p>` : ''}${signedIn && !bucket ? '<p>Хранилище фильмов временно недоступно.</p>' : form}${signedIn ? '<form method="post" action="/admin/logout"><button class="secondary">Выйти из панели</button></form>' : ''}</section></main>`);
 }
 async function saveFilm(request, bucket) {
   if(!bucket) return new Response(null,{status:503});
@@ -166,7 +147,10 @@ async function uploadedVideo(request, bucket, object) {
 export default {async fetch(request, env) {
   const url = new URL(request.url);
   const {pathname} = url;
-  if(pathname === '/cover.webp' && request.method === 'GET') return new Response(Uint8Array.from(atob(COVER), c=>c.charCodeAt(0)),{headers:{'Content-Type':'image/webp','Cache-Control':'public, max-age=3600'}});
+  if(Object.hasOwn(IMAGES,pathname) && ['GET','HEAD'].includes(request.method)) {
+    const body = request.method === 'HEAD' ? null : Uint8Array.from(atob(IMAGES[pathname]), c=>c.charCodeAt(0));
+    return new Response(body,{headers:{'Content-Type':'image/webp','Cache-Control':'public, max-age=3600'}});
+  }
   const {ACCESS_CODE:code,SESSION_SECRET:secret} = env;
   if(!code || !secret) return gate('Вход временно недоступен.',503);
   if(request.method === 'POST') {
@@ -226,12 +210,6 @@ export default {async fetch(request, env) {
     const object = await env.BUCKET.head('films/'+id);
     if(object) return route === 'film' ? filmPage(uploadedFilm(object)) : uploadedVideo(request,env.BUCKET,object);
   }
-  const film = films.find(item=>item.id===id);
-  if(film && pathname === `/${route}/${id}`) {
-    if(route==='film') return filmPage(film);
-    if(route==='video') return proxy(request,`${media}${film.file}.mp4`);
-    if(route==='poster') return proxy(request,`${media}images/${film.file}.jpg`);
-  }
   return page('Страница не найдена','<main class="wrap"><h2>Страница не найдена</h2><a href="/">Вернуться в каталог</a></main>',true,404);
 }};
-const COVER = '';
+const IMAGES = {};

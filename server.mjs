@@ -86,4 +86,4 @@ createServer(async (incoming, outgoing) => {
     if (!outgoing.destroyed) outgoing.end();
     console.error(error.message);
   }
-}).listen(port, host, () => console.log(`BASELINE Cinema: ${origin}\nLocal credentials: ${settings}`));
+}).listen(port, host, () => console.log(`youngcinemaclub: ${origin}\nLocal credentials: ${settings}`));
