@@ -7,6 +7,11 @@ import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import app from './dist/server/index.js';
 
+const host = process.env.HOST || '127.0.0.1';
+const port = Number(process.env.PORT || 3000);
+const origin = new URL(process.env.PUBLIC_ORIGIN || `http://localhost:${port}`).origin;
+const loopback = ['localhost', '127.0.0.1', '[::1]', '::1'];
+const localOnly = loopback.includes(host) && loopback.includes(new URL(origin).hostname);
 const data = resolve(process.env.FILM_DATA_DIR || 'film-data');
 await mkdir(data, { recursive: true, mode: 0o700 });
 const settings = join(data, 'local-auth.json');
@@ -21,7 +26,12 @@ try {
   if (error.code !== 'EEXIST') throw error;
 }
 const local = JSON.parse(await readFile(settings, 'utf8'));
-const env = Object.fromEntries(Object.entries(local).map(([key, value]) => [key, process.env[key] || value]));
+const env = {
+  ACCESS_CODE: process.env.ACCESS_CODE || (localOnly ? 'youngcc' : local.ACCESS_CODE),
+  ADMIN_PASSWORD: process.env.ADMIN_PASSWORD || (localOnly ? 'youngcc' : local.ADMIN_PASSWORD),
+  ADMIN_USER: process.env.ADMIN_USER || local.ADMIN_USER,
+  SESSION_SECRET: process.env.SESSION_SECRET || local.SESSION_SECRET,
+};
 
 const uuid = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/;
 function directory(key) {
@@ -65,9 +75,6 @@ env.BUCKET = {
   },
 };
 
-const host = process.env.HOST || '127.0.0.1';
-const port = Number(process.env.PORT || 3000);
-const origin = new URL(process.env.PUBLIC_ORIGIN || `http://localhost:${port}`).origin;
 createServer(async (incoming, outgoing) => {
   try {
     const url = new URL(origin);
