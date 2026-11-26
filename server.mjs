@@ -6,6 +6,7 @@ import { resolve, join } from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import app from './dist/server/index.js';
+import { createCommunity } from './community.mjs';
 
 const host = process.env.HOST || '127.0.0.1';
 const port = Number(process.env.PORT || 3000);
@@ -32,6 +33,17 @@ const env = {
   ADMIN_USER: process.env.ADMIN_USER || local.ADMIN_USER,
   SESSION_SECRET: process.env.SESSION_SECRET || local.SESSION_SECRET,
 };
+
+env.COMMUNITY = createCommunity(data, env.SESSION_SECRET, {
+  clientId: process.env.GMAIL_CLIENT_ID,
+  clientSecret: process.env.GMAIL_CLIENT_SECRET,
+  refreshToken: process.env.GMAIL_REFRESH_TOKEN,
+  mailFrom: process.env.MAIL_FROM,
+});
+env.SUPPORT_DETAILS = process.env.SUPPORT_DETAILS;
+env.SUPPORT_INSTAGRAM = process.env.SUPPORT_INSTAGRAM;
+env.SUPPORT_EMAIL = process.env.SUPPORT_EMAIL;
+env.SUPPORT_TELEGRAM = process.env.SUPPORT_TELEGRAM;
 
 const uuid = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/;
 function directory(key) {
@@ -113,7 +125,10 @@ createServer(async (incoming, outgoing) => {
     const body = ['GET', 'HEAD'].includes(method) ? undefined : Readable.toWeb(incoming);
     const request = new Request(url, { method, headers: incoming.headers, body, duplex: 'half' });
     const response = await app.fetch(request, env);
-    outgoing.writeHead(response.status, Object.fromEntries(response.headers));
+    const headers = Object.fromEntries(response.headers);
+    const cookies = response.headers.getSetCookie();
+    if (cookies.length) headers['set-cookie'] = cookies;
+    outgoing.writeHead(response.status, headers);
     if (!response.body || method === 'HEAD') outgoing.end();
     else await pipeline(Readable.fromWeb(response.body), outgoing);
   } catch (error) {

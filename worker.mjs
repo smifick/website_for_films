@@ -1,20 +1,86 @@
 const css = `
 *{box-sizing:border-box}html{color-scheme:dark}body{margin:0;background:#0e0e0e;color:#f6f5f2;font:16px/1.55 system-ui,sans-serif}a{color:inherit}header,footer{display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,5vw,76px);min-height:74px;border-bottom:1px solid #292929;gap:16px}footer{border:0;border-top:1px solid #292929;color:#aaa;font-size:13px}.logo{font-weight:900;letter-spacing:.19em;text-decoration:none;font-size:19px}.logo i{font-style:normal;margin-right:12px}.tag,.eyebrow{text-transform:uppercase;letter-spacing:.17em;font-size:12px;font-weight:700}.tag{color:#aaa}h1,h2{font-family:Georgia,serif;font-weight:400;line-height:.98;margin:16px 0 22px}h1{font-size:clamp(58px,8vw,126px);letter-spacing:-.07em}h2{font-size:clamp(32px,5vw,65px);letter-spacing:-.05em}p{color:#bdbdbd;max-width:50ch}button,.button{cursor:pointer;display:inline-flex;align-items:center;justify-content:center;border:1px solid #eee;background:#eee;color:#111;min-height:48px;padding:0 24px;font:700 15px system-ui;text-decoration:none}button:hover,.button:hover{background:#c9c9c9}button.secondary{background:transparent;color:#eee;border-color:#444}.gate{display:grid;grid-template-columns:1.25fr 1fr;min-height:calc(100svh - 148px)}.art{position:relative;min-height:320px;background:#222 center 30%/cover no-repeat url('/login.webp');display:flex;flex-direction:column;justify-content:end;padding:clamp(24px,5vw,76px);isolation:isolate}.art:before{content:'';position:absolute;inset:0;background:linear-gradient(0deg,#000e,#0007 50%,transparent 85%);z-index:-1}.art h1{max-width:13ch;font-size:clamp(40px,6vw,90px);overflow-wrap:anywhere}.art .eyebrow{border-left:2px solid #eee;padding-left:12px}.entry{align-self:center;width:min(100%,515px);padding:clamp(24px,5vw,76px);margin:auto}.entry p{margin-bottom:30px}label{display:block;font-size:14px;margin-bottom:8px}.inputrow{position:relative}input{width:100%;padding:14px 95px 14px 14px;background:#171717;color:#fff;border:1px solid #474747;border-radius:0;font:inherit}.inputrow button{position:absolute;right:0;top:0;min-height:100%;border:0;padding:0 12px;font-size:13px}.entry button[type=submit]{width:100%;margin-top:12px}.error{color:white;border-left:2px solid white;padding-left:10px}.wrap{width:min(1340px,100%);margin:auto;padding:38px clamp(20px,5vw,76px) 70px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(225px,1fr));gap:24px}.card{border-top:1px solid #444;padding-top:18px}.card img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:#222}.card h3{font:28px Georgia;margin:14px 0 6px}.card a{text-underline-offset:6px}.card p{font-size:15px}video{width:100%;max-height:72vh;background:#000;margin-top:20px}@media(max-width:720px){.gate{grid-template-columns:1fr}.art{min-height:300px}.entry{padding-top:42px;padding-bottom:50px}header,footer{min-height:64px;flex-wrap:wrap;padding-block:12px}}
+html{--paper:#121113;--panel:#1b191d;--ink:#f6f1e7;--muted:#bcb5ad;--line:#514848;--button:#f0dfc8;--button-text:#221813;--accent:#e3a069}
+html[data-theme=light]{color-scheme:light;--paper:#f7efe2;--panel:#fffaf1;--ink:#261c20;--muted:#624f49;--line:#a48f83;--button:#39242b;--button-text:#fff2df;--accent:#87402b}
+body{color:var(--ink);background:var(--paper)}
+header,footer,.card{border-color:var(--line)}
+header nav{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+header nav a{padding:10px 0}
+footer,p,.tag{color:var(--muted)}
+button,.button{background:var(--button);color:var(--button-text);border-color:var(--button)}
+button:hover,.button:hover{background:var(--accent);color:var(--paper)}
+button.secondary{color:var(--ink);border-color:var(--line)}
+input,textarea,#upload input,#upload textarea,.administration form input,.administration form textarea{color:var(--ink);background:var(--panel);border-color:var(--line)}
+.entry{width:100%;max-width:none;padding-inline:clamp(24px,7vw,115px);position:relative}
+.entry:before,.entry:after{content:'';display:block;height:10px;margin:0 0 28px;background:repeating-linear-gradient(90deg,var(--line) 0 13px,transparent 13px 25px);opacity:.62;border-radius:3px}
+.entry:after{margin:28px 0 0}
+.art{color:#fff7e9;border-inline-end:5px solid var(--accent)}
+.error{color:var(--ink);border-color:var(--accent)}
+.search,.discussion form{display:grid;gap:10px;max-width:520px;margin:0 0 28px}
+.search label,.discussion label{margin:0}
+.search input,.discussion input,.discussion textarea{padding:12px;border:1px solid var(--line);font:inherit;width:100%}
+.search>div{display:flex;gap:8px}
+.search input{min-width:0}
+.discussion{margin-top:48px;border-top:1px solid var(--line);padding-top:24px}
+.discussion details{margin:18px 0}
+.discussion summary{cursor:pointer;color:var(--accent)}
+.discussion details form{margin-top:12px}
+.messages article{border-top:1px solid var(--line);padding:18px 0;overflow-wrap:anywhere}
+.messages p,.support-details{white-space:pre-wrap}
+.support-title{overflow-wrap:anywhere}.support-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,290px),1fr));gap:32px}
+.support-grid section{background:var(--panel);padding:clamp(18px,4vw,35px);border-top:4px solid var(--accent);overflow-wrap:anywhere}
+.support-grid dd{margin:0 0 14px}
+@media(max-width:720px){.art{border-inline-end:0;border-bottom:5px solid var(--accent)}.search>div{flex-wrap:wrap}}
+
 `;
+const themeSetup = `<script>
+try { document.documentElement.dataset.theme = localStorage.getItem('theme') === 'light' ? 'light' : 'dark'; } catch {}
+</script>`;
+const themeButton = `<button type="button" id="theme-toggle" class="secondary">Сменить тему</button><script>
+const themeToggle = document.getElementById('theme-toggle');
+const root = document.documentElement;
+function updateThemeToggle() {
+  themeToggle.textContent = root.dataset.theme === 'light' ? 'Тёмная тема' : 'Светлая тема';
+}
+updateThemeToggle();
+themeToggle.addEventListener('click', () => {
+  root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
+  try { localStorage.setItem('theme', root.dataset.theme); } catch {}
+  updateThemeToggle();
+});
+</script>`;
 const logo = '<a class="logo" href="/"><i>◩</i>сообщество молодого кино</a>';
 function page(title, body, signedIn = false, status = 200) {
-  return new Response(`<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title} · youngcinemaclub</title><style>${css}.administration{max-width:540px;margin:auto}.admin-photo{display:block;width:min(100%,360px);height:auto;margin:24px auto}.administration form{display:grid;gap:12px;margin-top:24px}.administration input,.administration textarea{padding:12px;border:1px solid #474747;color:white;background:#171717;font:inherit;width:100%}.administration label{margin:0}.administration fieldset{margin:0;border:1px solid #474747;padding:12px;min-width:0}.cover-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.administration .cover-options label{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:6px;cursor:pointer}.administration .cover-options input{width:auto;margin:0}.cover-options img{grid-column:1/-1;width:100%;aspect-ratio:16/10;object-fit:cover}.administration button:disabled{opacity:.55;cursor:wait}</style><header>${logo}${signedIn ? '<form method="post" action="/logout"><button class="secondary">Выйти</button></form>' : '<span class="tag">Частный кинозал молодого кино</span>'}</header>${body}<footer><span>youngcinemaclub</span><span>Онлайн-кинотеатр</span></footer></html>`, {status, headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Frame-Options':'DENY'}});
+  return new Response(`<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${title} · youngcinemaclub</title>${themeSetup}<style>${css}.administration{max-width:540px;margin:auto}.admin-photo{display:block;width:min(100%,360px);height:auto;margin:24px auto}.administration form{display:grid;gap:12px;margin-top:24px}.administration input,.administration textarea{padding:12px;border:1px solid #474747;color:white;background:#171717;font:inherit;width:100%}.administration label{margin:0}.administration fieldset{margin:0;border:1px solid #474747;padding:12px;min-width:0}.cover-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.administration .cover-options label{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:6px;cursor:pointer}.administration .cover-options input{width:auto;margin:0}.cover-options img{grid-column:1/-1;width:100%;aspect-ratio:16/10;object-fit:cover}.administration button:disabled{opacity:.55;cursor:wait}</style><header>${logo}<nav aria-label="Навигация"><a href="/support">Поддержать</a>${themeButton}${signedIn ? '<form method="post" action="/logout"><button class="secondary">Выйти</button></form>' : ''}</nav></header>${body}<footer><span>youngcinemaclub</span><span>Онлайн-кинотеатр</span></footer></html>`, {status, headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','X-Frame-Options':'DENY'}});
 }
 function gate(error = '', status = 200) {
   return page('Вход', `<main class="gate"><section class="art"><span class="eyebrow">Закрытая коллекция</span><h1>Частный кинозал молодого кино</h1></section><section class="entry"><h2>Вход в кинозал</h2><p>Введите код доступа, чтобы открыть каталог и смотреть фильмы.</p><form method="post" action="/"><label for="code">Код доступа</label><div class="inputrow"><input id="code" name="code" type="password" required maxlength="128" autocomplete="current-password"><button type="button" class="secondary" aria-pressed="false" onclick="const input=this.previousElementSibling;const show=input.type==='password';input.type=show?'text':'password';this.textContent=show?'Скрыть':'Показать';this.setAttribute('aria-pressed',show)">Показать</button></div>${error ? `<p class="error" role="alert">${error}</p>` : ''}<button type="submit">Открыть кинозал</button></form></section></main>`,false,status);
 }
-function catalog(films) {
-  const cards = films.map(film=>`<article class="card"><a href="/film/${film.id}" aria-label="${film.title}"><img src="${film.cover}" alt="" loading="lazy"></a><h3><a href="/film/${film.id}">${film.title}</a></h3><p>${film.description}</p></article>`).join('');
-  const content = cards ? `<div class="grid">${cards}</div>` : '<p>Фильмы пока не добавлены.</p>';
-  return page('Фильмы', `<main class="wrap"><h1>Коллекция</h1>${content}</main>`,true);
+function catalog(films, query) {
+  const normalize = value => value.normalize('NFC').toLocaleLowerCase('ru').replaceAll('ё','е');
+  const matching = query ? films.filter(film => normalize(film.rawTitle).includes(normalize(query))) : films;
+  const cards = matching.map(film=>`<article class="card"><a href="/film/${film.id}" aria-label="${film.title}"><img src="${film.cover}" alt="" loading="lazy"></a><h3><a href="/film/${film.id}">${film.title}</a></h3><p>${film.description}</p></article>`).join('');
+  const content = cards ? `<div class="grid">${cards}</div>` : query ? '<p>Фильмы по этому запросу не найдены.</p>' : '<p>Фильмы пока не добавлены.</p>';
+  return page('Фильмы', `<main class="wrap"><h1>Коллекция</h1><form class="search" role="search" action="/"><label for="film-search">Поиск по названию</label><div><input id="film-search" type="search" name="q" maxlength="120" value="${escapeHTML(query)}"><button>Найти</button></div>${query ? '<a href="/">Сбросить поиск</a>' : ''}</form>${content}</main>`,true);
 }
-function filmPage(film) {
-  return page(film.title,`<main class="wrap"><a href="/">Все фильмы</a><h1>${film.title}</h1><video controls playsinline preload="metadata" poster="${film.cover}" src="/video/${film.id}" onerror="document.getElementById('video-error').hidden=false"></video><p id="video-error" role="alert" hidden>Видео не загрузилось. Попробуйте обновить страницу.</p><p>${film.description}</p></main>`,true);
+function filmPage(film, comments = '') {
+  return page(film.title,`<main class="wrap"><a href="/">Все фильмы</a><h1>${film.title}</h1><video controls playsinline preload="metadata" poster="${film.cover}" src="/video/${film.id}" onerror="document.getElementById('video-error').hidden=false"></video><p id="video-error" role="alert" hidden>Видео не загрузилось. Попробуйте обновить страницу.</p><p>${film.description}</p>${comments}</main>`,true);
+}
+function supportPage(env, signedIn) {
+  return page('Поддержать', `<main class="wrap"><h1 class="support-title">Поддержать</h1><div class="support-grid"><section><h2>Реквизиты</h2><p class="support-details">${escapeHTML(env.SUPPORT_DETAILS || 'Реквизиты для поддержки проекта появятся здесь.')}</p></section><section><h2>Связаться с автором</h2><dl><dt>Instagram</dt><dd>${escapeHTML(env.SUPPORT_INSTAGRAM || 'Юзернейм появится здесь')}</dd><dt>Почта</dt><dd>${escapeHTML(env.SUPPORT_EMAIL || 'Адрес появится здесь')}</dd><dt>Telegram-канал</dt><dd>${escapeHTML(env.SUPPORT_TELEGRAM || 'Адрес канала появится здесь')}</dd></dl></section></div></main>`,signedIn);
+}
+function discussion(film, comments, { verified, emailEnabled, challenge, notice }) {
+  const path = '/film/' + film.id;
+  const identity = verified
+    ? '<p>Вы вошли по почте. Адрес скрыт от зрителей.</p><form method="post" action="' + path + '/email-logout"><button class="secondary">Выйти из почты</button></form>'
+    : emailEnabled
+      ? `<details${challenge || notice ? ' open' : ''}><summary>Подтвердить почту</summary>${challenge
+        ? `<form method="post" action="${path}/verify"><label for="email-code">Код из письма</label><input id="email-code" name="code" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" required><button>Подтвердить код</button></form>`
+        : ''}<form method="post" action="${path}/email"><label for="email">Электронная почта</label><input id="email" name="email" type="email" autocomplete="email" maxlength="254" required><button class="secondary">Отправить код</button></form></details>`
+      : '<p>Вход по почте пока недоступен. Можно оставить комментарий как гость.</p>';
+  return `<section id="comments" class="discussion"><h2>Комментарии</h2>${notice ? `<p role="status">${escapeHTML(notice)}</p>` : ''}${identity}<form method="post" action="${path}/comment"><label for="comment-name">Ваше имя</label><input id="comment-name" name="name" maxlength="60" required><label for="comment-text">Комментарий</label><textarea id="comment-text" name="text" rows="4" maxlength="1500" required></textarea><button>Опубликовать</button></form><div class="messages">${comments.length
+    ? comments.map(comment => `<article><strong>${escapeHTML(comment.name)}</strong> <span class="tag">${comment.verified ? 'Почта подтверждена' : 'Гость'}</span><p>${escapeHTML(comment.text)}</p></article>`).join('')
+    : '<p>Комментариев пока нет.</p>'}</div></section>`;
 }
 const encoder = new TextEncoder();
 async function signature(secret, value) {
@@ -46,6 +112,7 @@ function uploadedFilm(object) {
     id,
     cover:object.customMetadata.hasCover === '1' ? '/film-cover/'+id : '/cover.webp',
     title:escapeHTML(object.customMetadata.title),
+    rawTitle:object.customMetadata.title,
     description:escapeHTML(object.customMetadata.description),
   };
 }
@@ -253,6 +320,81 @@ async function uploadedVideo(request, bucket, object) {
   const video = await bucket.get(object.key,partial ? {range:{offset,length}} : undefined);
   return video ? new Response(video.body,{status:partial ? 206 : 200,headers}) : new Response(null,{status:404});
 }
+function cookieValue(request, name) {
+  return request.headers.get('Cookie')?.split(';').map(part => part.trim()).find(part => part.startsWith(name+'='))?.slice(name.length+1) ?? '';
+}
+function communityCookie(request, name, value, age) {
+  const secure = new URL(request.url).protocol === 'https:' ? '; Secure' : '';
+  return name+'='+value+'; Path=/; HttpOnly; SameSite=Strict; Max-Age='+age+secure;
+}
+async function verifiedAuthor(request, secret) {
+  const [expires, id, proof] = cookieValue(request,'youngcc_author').split('.');
+  return /^\d{10}$/.test(expires) && Number(expires) > Date.now()/1000
+    && Boolean(id && proof && equal(proof,await signature(secret,'author:'+expires+'.'+id)));
+}
+async function communityForm(request) {
+  const reader = request.body?.getReader();
+  const decoder = new TextDecoder();
+  let length = 0;
+  let text = '';
+  if(!reader) return null;
+  while(true) {
+    const {done,value} = await reader.read();
+    if(done) return new URLSearchParams(text + decoder.decode());
+    length += value.length;
+    if(length > 24_000) {
+      await reader.cancel();
+      return null;
+    }
+    text += decoder.decode(value,{stream:true});
+  }
+}
+async function renderDiscussion(request, env, film, notice = '', challenge = '') {
+  const comments = await env.COMMUNITY.comments(film.id);
+  return filmPage(film, discussion(film,comments,{
+    verified:await verifiedAuthor(request,env.SESSION_SECRET),
+    emailEnabled:env.COMMUNITY.emailEnabled, challenge, notice,
+  }));
+}
+async function postDiscussion(request, env, id, action) {
+  const {COMMUNITY:community,SESSION_SECRET:secret} = env;
+  if(!community || !env.BUCKET) return new Response(null,{status:404});
+  if(!await authenticated(request,secret)) return new Response(null,{status:401});
+  const film = await env.BUCKET.head('films/'+id);
+  if(!film) return new Response(null,{status:404});
+  const form = await communityForm(request);
+  if(!form) return new Response(null,{status:400});
+  const location = '/film/'+id+'#comments';
+  const back = (cookie) => new Response(null,{status:303,headers:{
+    Location:location,'Cache-Control':'no-store',...(cookie ? {'Set-Cookie':cookie} : {}),
+  }});
+  const challenge = cookieValue(request,'youngcc_challenge');
+  const show = (notice, pending = '') => renderDiscussion(request,env,uploadedFilm(film),notice,pending);
+  if(action === 'comment') {
+    const name = form.get('name')?.trim() ?? '';
+    const text = form.get('text')?.trim() ?? '';
+    if(!name || name.length > 60 || !text || text.length > 1500) return show('Укажите имя и комментарий длиной до 1500 символов.');
+    await community.comment(id,{name,text,verified:await verifiedAuthor(request,secret)});
+    return back();
+  }
+  if(action === 'email-logout') return back(communityCookie(request,'youngcc_author','',0));
+  if(!community.emailEnabled) return new Response(null,{status:503});
+  if(action === 'email') {
+    const email = form.get('email')?.trim().toLowerCase() ?? '';
+    if(email.length > 254 || !/^[a-z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-z0-9-]+(?:\.[a-z0-9-]+)+$/i.test(email)) return show('Укажите действительный адрес почты.',challenge);
+    const result = await community.sendCode(email);
+    if(typeof result === 'string') return show(result,challenge);
+    const response = await show('Код отправлен. Проверьте почту.',result.id);
+    response.headers.set('Set-Cookie',communityCookie(request,'youngcc_challenge',result.id,600));
+    return response;
+  }
+  const code = form.get('code') ?? '';
+  if(!/^\d{6}$/.test(code) || !community.verifyCode(challenge,code)) return show('Код неверен или истёк. Проверьте код или запросите новый.',challenge);
+  const age = 8*60*60;
+  const expires = Math.floor(Date.now()/1000)+age;
+  const session = expires+'.'+crypto.randomUUID();
+  return back(communityCookie(request,'youngcc_author',session+'.'+await signature(secret,'author:'+session),age));
+}
 export default {async fetch(request, env) {
   const url = new URL(request.url);
   const {pathname} = url;
@@ -261,6 +403,7 @@ export default {async fetch(request, env) {
     return new Response(body,{headers:{'Content-Type':'image/webp','Cache-Control':'public, max-age=3600'}});
   }
   const {ACCESS_CODE:code,SESSION_SECRET:secret} = env;
+  if(pathname === '/support' && ['GET','HEAD'].includes(request.method)) return supportPage(env,Boolean(secret && await authenticated(request,secret)));
   if(!code || !secret) return gate('Вход временно недоступен.',503);
   if(request.method === 'POST') {
     const origin = request.headers.get('Origin');
@@ -287,7 +430,14 @@ export default {async fetch(request, env) {
       try { return await saveFilm(request,env.BUCKET); }
       catch { return new Response(null,{status:502}); }
     }
-    if(pathname === '/logout') return redirect(request,'',0);
+    const discussionAction = /^\/film\/([a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12})\/(comment|email|verify|email-logout)$/.exec(pathname);
+    if(discussionAction) return postDiscussion(request,env,discussionAction[1],discussionAction[2]);
+    if(pathname === '/logout') {
+      const response = redirect(request,'',0);
+      response.headers.append('Set-Cookie',communityCookie(request,'youngcc_author','',0));
+      response.headers.append('Set-Cookie',communityCookie(request,'youngcc_challenge','',0));
+      return response;
+    }
     if(pathname !== '/' && pathname !== '/login') return new Response(null,{status:404});
     const reader = request.body?.getReader();
     if(!reader) return gate('Введите код доступа.',400);
@@ -312,12 +462,15 @@ export default {async fetch(request, env) {
   if(!['GET','HEAD'].includes(request.method)) return new Response(null,{status:405});
   if(pathname === '/admin' || pathname === '/admin/') return adminPage(await authenticated(request,secret,true),env.BUCKET);
   const signedIn = await authenticated(request,secret);
-  if(pathname === '/' || pathname === '/login') return signedIn ? catalog(await listUploads(env.BUCKET)) : gate();
+  if(pathname === '/' || pathname === '/login') return signedIn ? catalog(await listUploads(env.BUCKET),(url.searchParams.get('q') ?? '').trim().slice(0,120)) : gate();
   if(!signedIn) return new Response(null,{status:401,headers:{'Cache-Control':'no-store'}});
   const [,route,id] = pathname.split('/');
   if(env.BUCKET && ['film','video','film-cover'].includes(route) && /^[a-f0-9-]{36}$/.test(id) && pathname === `/${route}/${id}`) {
     const object = await env.BUCKET.head('films/'+id);
-    if(object && route === 'film') return filmPage(uploadedFilm(object));
+    if(object && route === 'film') {
+      const film = uploadedFilm(object);
+      return env.COMMUNITY ? renderDiscussion(request,env,film,'',cookieValue(request,'youngcc_challenge')) : filmPage(film);
+    }
     if(object && route === 'video') return uploadedVideo(request,env.BUCKET,object);
     if(object?.customMetadata.hasCover === '1' && route === 'film-cover') {
       const key = 'covers/'+id;
