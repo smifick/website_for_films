@@ -6,6 +6,7 @@ import { resolve, join } from 'node:path';
 import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import app from './dist/server/index.js';
+import { createAdminAuth } from './admin-auth.mjs';
 import { createCommunity } from './community.mjs';
 
 const host = process.env.HOST || '127.0.0.1';
@@ -34,6 +35,7 @@ const env = {
   SESSION_SECRET: process.env.SESSION_SECRET || local.SESSION_SECRET,
 };
 
+env.ADMIN_AUTH = await createAdminAuth(data, env.ADMIN_USER, env.ADMIN_PASSWORD);
 env.COMMUNITY = createCommunity(data, env.SESSION_SECRET, {
   clientId: process.env.GMAIL_CLIENT_ID,
   clientSecret: process.env.GMAIL_CLIENT_SECRET,

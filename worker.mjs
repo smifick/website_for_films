@@ -136,7 +136,17 @@ async function listUploads(bucket) {
   } while(cursor);
   return films.reverse();
 }
-function adminPage(signedIn, bucket, error = '') {
+function adminLockout(bucket, signedIn, retryAfter) {
+  const response = adminPage(signedIn,bucket,'Слишком много попыток. Попробуйте через '+Math.ceil(retryAfter/60)+' мин.',true,429);
+  response.headers.set('Retry-After',String(retryAfter));
+  return response;
+}
+function adminPage(signedIn, bucket, error = '', managed = false, status = 200) {
+  const settings = signedIn && managed ? `<section aria-label="Безопасность"><h2>Безопасность</h2>
+<form method="post" action="/admin/password"><label for="current-password">Текущий пароль</label><input id="current-password" name="current" type="password" autocomplete="current-password" maxlength="128" required>
+<label for="new-password">Новый пароль (от 12 символов)</label><input id="new-password" name="next" type="password" autocomplete="new-password" minlength="12" maxlength="128" required>
+<label for="repeat-password">Повторите новый пароль</label><input id="repeat-password" name="repeat" type="password" autocomplete="new-password" minlength="12" maxlength="128" required><button>Сменить пароль</button></form>
+<form method="post" action="/admin/logout-all"><button class="secondary">Выйти со всех устройств</button></form></section>` : '';
   const form = signedIn ? `<form id="upload"><label for="title">Название</label><input id="title" name="title" required maxlength="120"><label for="description">Описание</label><textarea id="description" name="description" required maxlength="800" rows="4"></textarea><label for="movie">Файл MP4, до 90 МБ</label><input id="movie" type="file" accept=".mp4,video/mp4" required><fieldset><legend>Обложка фильма</legend><div class="cover-options" id="cover-options"><label><input type="radio" name="cover" value="default" checked>Стандартная<img src="/cover.webp" alt=""></label></div><p id="cover-status" role="status">Выберите MP4, чтобы увидеть кадры из фильма.</p></fieldset><button>Загрузить фильм</button></form><p id="upload-status" role="status"></p>
 <script>
 const form = document.getElementById('upload');
@@ -241,7 +251,7 @@ form.addEventListener('submit', async event => {
   }
 });
 </script>` : `<form method="post" action="/admin"><label for="user">Логин</label><input id="user" name="user" required maxlength="128" autocomplete="username"><label for="password">Пароль</label><input id="password" name="password" type="password" required maxlength="128" autocomplete="current-password"><button>Войти</button></form>`;
-  return page('Администрирование', `<main class="wrap"><section class="administration"><a href="/">К кинотеатру</a><img class="admin-photo" src="/admin.webp" alt="Мартин Скорсезе — Absolute Cinema"><h2>${signedIn ? 'Загрузка фильма' : 'Вход администратора'}</h2>${error ? `<p class="error" role="alert">${error}</p>` : ''}${signedIn && !bucket ? '<p>Хранилище фильмов временно недоступно.</p>' : form}${signedIn ? '<form method="post" action="/admin/logout"><button class="secondary">Выйти из панели</button></form>' : ''}</section></main>`);
+  return page('Администрирование', `<main class="wrap"><section class="administration"><a href="/">К кинотеатру</a><img class="admin-photo" src="/admin.webp" alt="Мартин Скорсезе — Absolute Cinema"><h2>${signedIn ? 'Загрузка фильма' : 'Вход администратора'}</h2>${error ? `<p class="error" role="alert">${error}</p>` : ''}${signedIn && !bucket ? '<p>Хранилище фильмов временно недоступно.</p>' : form}${signedIn ? '<form method="post" action="/admin/logout"><button class="secondary">Выйти из панели</button></form>' : ''}${settings}</section></main>`,false,status);
 }
 async function saveFilm(request, bucket) {
   if(!bucket) return new Response(null,{status:503});
@@ -341,7 +351,7 @@ async function verifiedAuthor(request, secret) {
   return /^\d{10}$/.test(expires) && Number(expires) > Date.now()/1000
     && Boolean(id && proof && equal(proof,await signature(secret,'author:'+expires+'.'+id)));
 }
-async function communityForm(request) {
+async function readForm(request, maxBytes = 24_000) {
   const reader = request.body?.getReader();
   const decoder = new TextDecoder();
   let length = 0;
@@ -351,7 +361,7 @@ async function communityForm(request) {
     const {done,value} = await reader.read();
     if(done) return new URLSearchParams(text + decoder.decode());
     length += value.length;
-    if(length > 24_000) {
+    if(length > maxBytes) {
       await reader.cancel();
       return null;
     }
@@ -371,7 +381,7 @@ async function postDiscussion(request, env, id, action) {
   if(!await authenticated(request,secret)) return new Response(null,{status:401});
   const film = await env.BUCKET.head('films/'+id);
   if(!film) return new Response(null,{status:404});
-  const form = await communityForm(request);
+  const form = await readForm(request);
   if(!form) return new Response(null,{status:400});
   const location = '/film/'+id+'#comments';
   const back = (cookie) => new Response(null,{status:303,headers:{
@@ -414,6 +424,9 @@ export default {async fetch(request, env) {
   const {ACCESS_CODE:code,SESSION_SECRET:secret} = env;
   if(pathname === '/support' && ['GET','HEAD'].includes(request.method)) return supportPage(env,Boolean(secret && await authenticated(request,secret)));
   if(!code || !secret) return gate('Вход временно недоступен.',503);
+  const admin = env.ADMIN_AUTH;
+  const adminToken = cookieValue(request,'baseline_admin');
+  const adminSignedIn = () => admin ? admin.active(adminToken) : authenticated(request,secret,true);
   if(request.method === 'POST') {
     const origin = request.headers.get('Origin');
     const site = request.headers.get('Sec-Fetch-Site');
@@ -421,9 +434,17 @@ export default {async fetch(request, env) {
     if(!sameOrigin) return new Response(null,{status:403});
     if(pathname === '/admin') {
       if(!env.ADMIN_USER || !env.ADMIN_PASSWORD) return adminPage(false,env.BUCKET,'Вход временно недоступен.');
-      const text = await request.text();
-      if(text.length > 1024) return adminPage(false,env.BUCKET,'Неверный логин или пароль.');
-      const form = new URLSearchParams(text);
+      const form = await readForm(request,2048);
+      if(!form) return new Response(null,{status:413});
+      const name = form.get('user') ?? '';
+      const password = form.get('password') ?? '';
+      if(name.length > 128 || password.length > 128) return new Response(null,{status:400});
+      if(admin) {
+        const result = await admin.login(name,password);
+        if(result.token) return redirect(request,result.token,3600,true);
+        if(result.retryAfter) return adminLockout(env.BUCKET,false,result.retryAfter);
+        return adminPage(false,env.BUCKET,'Неверный логин или пароль. Осталось попыток: '+result.remaining+'.',true,401);
+      }
       const credentials = JSON.stringify([form.get('user'),form.get('password')]);
       const expected = JSON.stringify([env.ADMIN_USER,env.ADMIN_PASSWORD]);
       if(!equal(await signature(secret,'credentials:'+credentials),await signature(secret,'credentials:'+expected))) {
@@ -433,9 +454,34 @@ export default {async fetch(request, env) {
       const expiry = Math.floor(Date.now()/1000)+ttl;
       return redirect(request,`${expiry}.${await signature(secret,'admin:'+expiry)}`,ttl,true);
     }
-    if(pathname === '/admin/logout') return redirect(request,'',0,true);
+    if(pathname === '/admin/logout') {
+      if(admin) await admin.logout(adminToken);
+      return redirect(request,'',0,true);
+    }
+    if(admin && pathname === '/admin/logout-all') {
+      if(!await adminSignedIn()) return new Response(null,{status:401});
+      await admin.logout(adminToken,true);
+      return redirect(request,'',0,true);
+    }
+    if(admin && pathname === '/admin/password') {
+      if(!await adminSignedIn()) return new Response(null,{status:401});
+      const form = await readForm(request,4096);
+      if(!form) return new Response(null,{status:413});
+      const current = form.get('current') ?? '';
+      const next = form.get('next') ?? '';
+      const repeat = form.get('repeat') ?? '';
+      if(current.length > 128 || next.length < 12 || next.length > 128 || next !== repeat || next === current) {
+        return adminPage(true,env.BUCKET,'Укажите новый пароль длиной от 12 до 128 символов, отличный от текущего, и повторите его.',true,400);
+      }
+      const result = await admin.changePassword(adminToken,current,next);
+      if(result.retryAfter) return adminLockout(env.BUCKET,await adminSignedIn(),result.retryAfter);
+      if(!result.changed) {
+        return adminPage(await adminSignedIn(),env.BUCKET,'Проверьте текущий пароль или войдите снова.',true,401);
+      }
+      return redirect(request,'',0,true);
+    }
     if(pathname === '/admin/upload') {
-      if(!await authenticated(request,secret,true)) return new Response(null,{status:401});
+      if(!await adminSignedIn()) return new Response(null,{status:401});
       try { return await saveFilm(request,env.BUCKET); }
       catch { return new Response(null,{status:502}); }
     }
@@ -469,7 +515,7 @@ export default {async fetch(request, env) {
     return redirect(request,`${expiry}.${await signature(secret,'session:'+expiry)}`,ttl);
   }
   if(!['GET','HEAD'].includes(request.method)) return new Response(null,{status:405});
-  if(pathname === '/admin' || pathname === '/admin/') return adminPage(await authenticated(request,secret,true),env.BUCKET);
+  if(pathname === '/admin' || pathname === '/admin/') return adminPage(await adminSignedIn(),env.BUCKET,'',Boolean(admin));
   const signedIn = await authenticated(request,secret);
   if(pathname === '/' || pathname === '/login') return signedIn ? catalog(await listUploads(env.BUCKET),(url.searchParams.get('q') ?? '').trim().slice(0,120)) : gate();
   if(!signedIn) return new Response(null,{status:401,headers:{'Cache-Control':'no-store'}});
